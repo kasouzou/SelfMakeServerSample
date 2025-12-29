@@ -1,5 +1,6 @@
 // コミットの内容を編集・作成するページ。
 import 'package:flutter/material.dart';
+import 'package:selfmakeserver/service/api_client.dart';
 
 
 class InputUserPage extends StatefulWidget {
@@ -13,6 +14,7 @@ class InputUserPage extends StatefulWidget {
 
 class _InputUserState extends State<InputUserPage> {
   late TextEditingController _commitContentsController;
+  // late の意味 「initStateで必ず初期化するからnullにならないよ」という約束を表します。
 
   @override
   void initState() {
@@ -81,6 +83,9 @@ class _InputUserState extends State<InputUserPage> {
                       final editingCommitContents = _commitContentsController.text;
                       debugPrint('サーバーへの送信ボタンが押されました。');
                       debugPrint('サーバーへ送る内容：$editingCommitContents');
+                      final apiClient = ApiClient();
+                      await apiClient.sendMessage(editingCommitContents);
+                      debugPrint('サーバーへの送信が成功しました。');
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
