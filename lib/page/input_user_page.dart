@@ -80,12 +80,12 @@ class _InputUserState extends State<InputUserPage> {
                     ),
                     onPressed: () async {
                       // 編集後の内容を取得
-                      final editingCommitContents = _commitContentsController.text;
-                      debugPrint('サーバーへの送信ボタンが押されました。');
-                      debugPrint('サーバーへ送る内容：$editingCommitContents');
-                      final apiClient = ApiClient();
-                      await apiClient.sendMessage(editingCommitContents);
-                      debugPrint('サーバーへの送信が成功しました。');
+                      // final editingCommitContents = _commitContentsController.text;
+                      // debugPrint('サーバーへの送信ボタンが押されました。');
+                      // debugPrint('サーバーへ送る内容：$editingCommitContents');
+                      // final apiClient = ApiClient();
+                      // await apiClient.sendMessage(editingCommitContents);
+                      // debugPrint('サーバーへの送信が成功しました。');
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

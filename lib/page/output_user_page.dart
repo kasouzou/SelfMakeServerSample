@@ -1,6 +1,8 @@
 // コミットの内容を編集・作成するページ。
 import 'package:flutter/material.dart';
 
+import '../service/api_client.dart';
+
 
 class OutputUserPage extends StatefulWidget {
   const OutputUserPage({
@@ -84,9 +86,16 @@ class _OutputUserState extends State<OutputUserPage> {
                     ),
                     onPressed: () async {
                       // 編集後の内容を取得
-                      final editingCommitContents = _commitContentsController.text;
-                      debugPrint('サーバーからの受信ボタンが押されました。');
-                      debugPrint('サーバーからの受信内容：$editingCommitContents');
+                      // final editingCommitContents = _commitContentsController.text;
+                      // debugPrint('サーバーからの受信ボタンが押されました。');
+                      // debugPrint('サーバーからの受信内容：$editingCommitContents');
+
+                      // ToDo: サーバーからデータを受信して表示する処理を実装
+                      final apiClient = ApiClient();
+                      final message = await apiClient.fetchHello();
+                      setState(() {
+                        _commitContentsController.text = message;
+                      });
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
