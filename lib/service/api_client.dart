@@ -6,21 +6,38 @@ import 'package:http/http.dart' as http;
 /// user-defined: 自宅サーバーとの通信を担当するクラス
 class ApiClient {
   /// user-defined: サーバーのベースURL
-  static const String baseUrl = 'http://192.168.1.4:8000';
+  static const String baseUrl = 'http://192.168.1.2:8000';
+  
+  /// POST /message を叩く
+  Future<void> sendMessage(String message) async {
+    final uri = Uri.parse('$baseUrl/message');
 
-  /// GET /hello を叩く
-  Future<String> fetchHello() async {
-    final uri = Uri.parse('$baseUrl/hello'); // Uri.parse は公式関数
-
-    final response = await http.get(uri); // http.get は公式API
+    final response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'message': message,
+      }),
+    );
 
     if (response.statusCode != 200) {
-      throw Exception('HTTP error: ${response.statusCode}');
+      throw Exception('送信に失敗しました: ${response.statusCode}');
+    }
+  }
+
+  Future<String?> fetchMessage() async {
+    final uri = Uri.parse('$baseUrl/message');
+
+    final response = await http.get(uri);
+
+    if (response.statusCode != 200) {
+      throw Exception('取得に失敗しました: ${response.statusCode}');
     }
 
-    // response.body は String（JSON文字列）
-    final decoded = jsonDecode(response.body); // dart:convert の公式関数
-    return decoded['message']; // FastAPI が返す JSON 構造に依存
+    final decoded = jsonDecode(response.body);
+    return decoded['message'];
   }
 }
 

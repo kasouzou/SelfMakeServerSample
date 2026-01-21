@@ -85,16 +85,16 @@ class _OutputUserState extends State<OutputUserPage> {
                       backgroundColor: const Color.fromARGB(255, 23, 140, 0),
                     ),
                     onPressed: () async {
-                      // 編集後の内容を取得
+                      // // 編集後の内容を取得
                       // final editingCommitContents = _commitContentsController.text;
                       // debugPrint('サーバーからの受信ボタンが押されました。');
                       // debugPrint('サーバーからの受信内容：$editingCommitContents');
 
-                      // ToDo: サーバーからデータを受信して表示する処理を実装
+                      // ToDo: サーバーからデータを受信して表示する処理
                       final apiClient = ApiClient();
-                      final message = await apiClient.fetchHello();
+                      final message = await apiClient.fetchMessage();
                       setState(() {
-                        _commitContentsController.text = message;
+                        _commitContentsController.text = message ?? '';
                       });
                     },
                     child: Row(
