@@ -79,13 +79,47 @@ class _InputUserState extends State<InputUserPage> {
                       elevation: 5,
                     ),
                     onPressed: () async {
-                      // 編集後の内容を取得
-                      // final editingCommitContents = _commitContentsController.text;
-                      // debugPrint('サーバーへの送信ボタンが押されました。');
-                      // debugPrint('サーバーへ送る内容：$editingCommitContents');
-                      // final apiClient = ApiClient();
-                      // await apiClient.sendMessage(editingCommitContents);
-                      // debugPrint('サーバーへの送信が成功しました。');
+                      // 1. 入力されたテキストを取得
+                      final text = _commitContentsController.text;
+
+                      // 空文字なら何もしない（ガード節）
+                      if (text.isEmpty) {
+                        debugPrint('文字が入ってないぞ');
+                        return;
+                      }
+
+                      // キーボードを閉じる（UX向上）
+                      FocusScope.of(context).unfocus();
+
+                      try {
+                        final apiClient = ApiClient();
+                        
+                        // 2. 送信実行！
+                        await apiClient.sendMessage(text);
+
+                        // 3. 成功したら入力欄をクリア
+                        _commitContentsController.clear();
+
+                        // ユーザーにフィードバック（スナックバー）
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('サーバーに保存しました！'),
+                              backgroundColor: Colors.blue,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        // エラー時のフィードバック
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('送信失敗: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
