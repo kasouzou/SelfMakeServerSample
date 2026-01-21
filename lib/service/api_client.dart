@@ -15,7 +15,7 @@ class ApiClient {
     final response = await http.get(uri);
 
     if (response.statusCode == 200) {
-      // 1. response.body (ただの文字列) を jsonDecode で Dartのオブジェクトに変換
+      // 1. response.body (ただの文字列)をjsonDecode で Dartのオブジェクトに変換
       // ここで [ { "message": "..." }, ... ] という「List」に変わる
       final List<dynamic> decodedData = jsonDecode(response.body);
       return decodedData;
