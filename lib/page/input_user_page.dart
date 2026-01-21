@@ -16,6 +16,9 @@ class _InputUserState extends State<InputUserPage> {
   late TextEditingController _commitContentsController;
   // late の意味 「initStateで必ず初期化するからnullにならないよ」という約束を表します。
 
+  // 1. ロード中かどうかを管理する変数を追加
+  bool _isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -29,7 +32,7 @@ class _InputUserState extends State<InputUserPage> {
     super.dispose();
   }
 
-@override
+  @override
   Widget build(BuildContext context) {
     // 画面の高さなどの情報を取得
     final mediaQuery = MediaQuery.of(context);
@@ -88,16 +91,21 @@ class _InputUserState extends State<InputUserPage> {
                         return;
                       }
 
+                      // 2. 送信開始！ フラグを立てる
+                      setState(() {
+                        _isLoading = true;
+                      });
+
                       // キーボードを閉じる（UX向上）
                       FocusScope.of(context).unfocus();
 
                       try {
                         final apiClient = ApiClient();
                         
-                        // 2. 送信実行！
+                        // 3. 送信実行！
                         await apiClient.sendMessage(text);
 
-                        // 3. 成功したら入力欄をクリア
+                        // 4. 成功したら入力欄をクリア
                         _commitContentsController.clear();
 
                         // ユーザーにフィードバック（スナックバー）
@@ -120,8 +128,23 @@ class _InputUserState extends State<InputUserPage> {
                           );
                         }
                       }
+                      finally {
+                        // 3. 成功しても失敗しても、最後に必ずフラグを下ろす（ここ重要！）
+                        if (mounted) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        }
+                      }
                     },
-                    child: Row(
+                    // 4. ボタンの中身を条件分岐させる
+                    child: _isLoading 
+                        ? const SizedBox(
+                            width: 24, 
+                            height: 24, 
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
+                    : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
                       children: [
