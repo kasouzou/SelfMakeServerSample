@@ -92,9 +92,13 @@ class _OutputUserState extends State<OutputUserPage> {
 
                       // ToDo: サーバーからデータを受信して表示する処理
                       final apiClient = ApiClient();
-                      final message = await apiClient.fetchMessage();
+                      // 1. メソッドを呼び出す
+                      final List<dynamic> messages = await apiClient.fetchMessages();
                       setState(() {
-                        _commitContentsController.text = message ?? '';
+                        // 帰ってきたJSON全体をそのままテキストエリアに突っ込む
+                        // リストを「文字列」としてそのままテキストエリアに表示
+                        // .toString() を使うことで、中身がJSON形式で画面に出るはずだ
+                        _commitContentsController.text = messages.toString();
                       });
                     },
                     child: Row(

@@ -1,43 +1,27 @@
-//ダミー通信層を作る　ここが将来 HTTP / TCP / gRPC に置き換わる
+import 'package:http/http.dart' as http; // 【公式】パッケージを http という名前で使う
+import 'dart:convert';               // 【標準】JSON変換用
 
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-
-/// user-defined: 自宅サーバーとの通信を担当するクラス
 class ApiClient {
-  /// user-defined: サーバーのベースURL
-  static const String baseUrl = 'http://192.168.1.2:8000';
-  
-  /// POST /message を叩く
-  Future<void> sendMessage(String message) async {
-    final uri = Uri.parse('$baseUrl/message');
+  // 1. ベースとなるURLを定義
+  // ツッコミ：最後を / で終わらせないのがコツ。エンドポイント結合時にミスを防げる。
+  static const String baseUrl = 'https://kasouzou.com';
 
-    final response = await http.post(
-      uri,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'message': message,
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('送信に失敗しました: ${response.statusCode}');
-    }
-  }
-
-  Future<String?> fetchMessage() async {
-    final uri = Uri.parse('$baseUrl/message');
-
+  /// サーバーから全メッセージを取得する
+  /// 戻り値: Future<List<dynamic>> (どんな型が入るか不明なリストの予約票)
+  Future<List<dynamic>> fetchMessages() async {
+    final uri = Uri.parse('$baseUrl/messages');
+    
+    // ツッコミ：awaitを忘れると、中身ではなく「予約票」そのものを操作しようとしてエラーになるぞ
     final response = await http.get(uri);
 
-    if (response.statusCode != 200) {
-      throw Exception('取得に失敗しました: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      // 1. response.body (ただの文字列) を jsonDecode で Dartのオブジェクトに変換
+      // ここで [ { "message": "..." }, ... ] という「List」に変わる
+      final List<dynamic> decodedData = jsonDecode(response.body);
+      return decodedData;
+    } else {
+      // 失敗した時は、潔くエラーを投げる。これがエラーハンドリングの第一歩だ。
+      throw Exception('サーバー接続失敗: ${response.statusCode}');
     }
-
-    final decoded = jsonDecode(response.body);
-    return decoded['message'];
   }
 }
-
